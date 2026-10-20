@@ -76,26 +76,31 @@ def main():
     print("5. Record the arrival of a package at a regional shipping facility.")
     print("6. Exit the application.")
 
-    strChoice = input("What would you like to do")
+    strChoice = input("\n")
 
     #Main menu
     #Create
     if strChoice == "1":
         print("test")
+        main()
     #View
     elif strChoice == "2":
         print("test")
+        main()
     #Update
     elif strChoice == "3":
         print("test")
+        main()
     #Delete
     elif strChoice == "4":
         print("test")
+        main()
     #Record
     elif strChoice == "5":
         print("test")
+        main()
     #Exit
     elif strChoice == "6":
-        print("test")
+        print("Exiting the application. Have a nice day!")
 
 main()
