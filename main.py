@@ -6,22 +6,73 @@ import sqlite3
 
 #Start of Global Functions
 #Create 
-def addCustomer(strCustomerID,strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType):
+def addPackageShipment():
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         #Prepared statement
         #Question marks align with the values being inserted
-        strQuery = f"INSERT INTO customers VALUES (?,?,?,?,?,?,?,?,?)"
-        #'{strCustomerID}','{strCompanyName}','{strContactFirstName}','{strContactLastName}','{strEmail}','{strPhone}','{strCity}','{strState}','{strCustomerType}'
-        tupValues = (strCustomerID,strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType)
+        strQuery = f"INSERT INTO Packages VALUES (?,?,?,?,?,?,?,?,?,?)"
+
+        strTrackingNumber = input("Enter the Tracking Number: ")
+        if strTrackingNumber == "":
+            print("Error. Tracking Number cannot be blank! Please try again.")
+            strTrackingNumber = input("Enter the Tracking Number: ")
+
+        strDestinationFirstName = input("Enter the Destination First Name: ")
+        if strDestinationFirstName == "":
+            print("Error. Destination First Name cannot be blank! Please try again.")
+            strDestinationFirstName = input("Enter the Destination First Name: ")
+
+        strDestinationLastName = input("Enter the Destination Last Name: ")
+        if strDestinationLastName == "":
+            print("Error. Destination Last Name cannot be blank! Please try again.")
+            strDestinationLastName = input("Enter the Destination Last Name: ")
+
+        strDestinationCompany = input("Enter the Destination Company: ")
+        if strDestinationCompany == "":
+            print("Error. Destination Company cannot be blank! Please try again.")
+            strDestinationCompany = input("Enter the Destination Company: ")
+
+        strDestinationStreet = input("Enter the Destination Street: ")
+        if strDestinationStreet == "":
+            print("Error. Destination Street cannot be blank! Please try again.")
+            strDestinationStreet = input("Enter the Destination Street: ")
+
+        strDestinationCity = input("Enter the Destination City: ")
+        if strDestinationCity == "":
+            print("Error. Destination City cannot be blank! Please try again.")
+            strDestinationCity = input("Enter the Destination City: ")
+
+        strDestinationState = input("Enter the Destination State: ")
+        if strDestinationState == "":
+            print("Error. Destination State cannot be blank! Please try again.")
+            strDestinationState = input("Enter the Destination State: ")
+
+        strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+        if strDestinationZipCode == "":
+            print("Error. Destination ZIP Code cannot be blank! Please try again.")
+            strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+
+        strOriginatingCustomer = input("Enter the Originating Customer: ")
+        if strOriginatingCustomer == "":
+            print("Error. Originating Customer cannot be blank! Please try again.")
+            strOriginatingCustomer = input("Enter the Originating Customer: ")
+
+        strOriginatingFacility = input("Enter the Originating Facility: ")
+        if strOriginatingFacility == "":
+            print("Error. Originating Facility cannot be blank! Please try again.")
+            strOriginatingFacility = input("Enter the Destination Last Name: ")
+
+        tupValues = (strTrackingNumber,strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility)
         objCursor = conLogistics.cursor()
         #Using the tupValues
         objCursor.execute(strQuery,tupValues)
 
         conLogistics.commit()
     conLogistics.close()
+    print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
 
 #Read
-def getCustomer(strCustomerID):
+def getShippingInformation(strCustomerID):
     strQuerry = ""
     if strCustomerID == "A":
         strQuery = "SELECT * FROM customers"
@@ -36,7 +87,7 @@ def getCustomer(strCustomerID):
     conLogistics.close()
 
 #Update
-def updateCustomer(strCustomerID,strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType):
+def updateShippingInformation(strCustomerID,strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType):
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         #Prepared statement
         #Question marks align with the values being inserted
@@ -51,7 +102,7 @@ def updateCustomer(strCustomerID,strCompanyName,strContactFirstName,strContactLa
     conLogistics.close()
 
 #Delete
-def deleteCustomer(strCustomerID):
+def deleteExisitingPackage(strCustomerID):
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         #Prepared statement
         #Question marks align with the values being inserted
@@ -64,6 +115,10 @@ def deleteCustomer(strCustomerID):
 
         conLogistics.commit()
     conLogistics.close()
+
+#Record
+def recordArrivalOfPackage():
+    print("This is a placeholder")
 
 def mainMenu():
 
@@ -81,19 +136,19 @@ def mainMenu():
     #Main menu
     #Create
     if strChoice == "1":
-        print("test")
+        addPackageShipment()
         mainMenu()
     #View
     elif strChoice == "2":
-        print("test")
+        getShippingInformation()
         mainMenu()
     #Update
     elif strChoice == "3":
-        print("test")
+        updateShippingInformation()
         mainMenu()
     #Delete
     elif strChoice == "4":
-        print("test")
+        deleteExisitingPackage()
         mainMenu()
     #Record
     elif strChoice == "5":
@@ -102,6 +157,8 @@ def mainMenu():
     #Exit
     elif strChoice == "6":
         print("Exiting the application. Have a nice day!")
+
+#End of Global Functions
 
 #Calls the main menu
 mainMenu()
