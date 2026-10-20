@@ -65,27 +65,37 @@ def deleteCustomer(strCustomerID):
         conLogistics.commit()
     conLogistics.close()
 
-#End of Global Functions
+def main():
 
-#Main
-input = input(print("What would you like to do"))
+    print("-----Welcome to Swollen Hippo Logistics-----")
+    print("Choose from the options below:")
+    print("1. Create a new package shipment.")
+    print("2. View the shipping information for an existing package (Including the tracking history of a package).")
+    print("3. Update the shipping information for an existing package.")
+    print("4. Delete an existing package.")
+    print("5. Record the arrival of a package at a regional shipping facility.")
+    print("6. Exit the application.")
 
-#Main menu
-#Create
-if input == 1:
-    print("test")
-#View
-elif input == 2:
-    print("test")
-#Update
-elif input == 3:
-    print("test")
-#Delete
-elif input == 4:
-    print("test")
-#Record
-elif input == 5:
-    print("test")
-#Exit
-elif input == 6:
-    print("test")
+    strChoice = input("What would you like to do")
+
+    #Main menu
+    #Create
+    if strChoice == "1":
+        print("test")
+    #View
+    elif strChoice == "2":
+        print("test")
+    #Update
+    elif strChoice == "3":
+        print("test")
+    #Delete
+    elif strChoice == "4":
+        print("test")
+    #Record
+    elif strChoice == "5":
+        print("test")
+    #Exit
+    elif strChoice == "6":
+        print("test")
+
+main()
