@@ -105,29 +105,61 @@ def updateShippingInformation(strCustomerID,strCompanyName,strContactFirstName,s
 def deleteExisitingPackage():
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
+        #Gets tracking number from user
         strTrackingNumber = input("What is the Tracking Number of the Package you wish to Delete? : ")
 
-        strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = '{strTrackingNumber}'"
+        #Open database and converts the row of TrackingNumber into a list
+        strQuery = "SELECT TrackingNumber FROM Packages"
         objCursor = conLogistics.cursor()
         objCursor.execute(strQuery)
-        lstRows = objCursor.fetchall()
-        print(lstRows)
+        lstTrackingNumbers = objCursor.fetchall()
 
-        strChoice = input("Is this the Package you wish to Delete? (Y/N): ")
+        #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
+        #will the program switch it to true
+        blnDoesTrackingNumberExist = False
 
-        if strChoice == "y" or strChoice == "Y":
-            #Prepared statement
-            #Question marks align with the values being inserted
-            strQuery = f"DELETE FROM Packages WHERE TrackingNumber = ?"
+        #Iterates through the list to find the correct number if available
+        for objTrackingNumber in lstTrackingNumbers:
 
-            tupValues = (strTrackingNumber,)
+            #Note: I used AI to understand an issue and fix this line of code vvv
+            #Figured out that a tuple could not be compared to a string
+            #So it was always returning false
+            if objTrackingNumber[0] == strTrackingNumber:
+
+                #If there blnDoesTrackingNumberExist returns true
+                blnDoesTrackingNumberExist = True
+
+        #Using the value of blnDoesTrackingNumberExist 
+        if blnDoesTrackingNumberExist == True:
+
+            #Opens the database and uses the tracking number to find the row
+            #associated with it and print off all of the information
+            strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = '{strTrackingNumber}'"
             objCursor = conLogistics.cursor()
-            #Using the tupValues
-            objCursor.execute(strQuery,tupValues)
+            objCursor.execute(strQuery)
+            lstRows = objCursor.fetchall()
+            print(lstRows)
+
+            #Ask the user if this is the correct package they wish to delete
+            strChoice = input("Is this the Package you wish to Delete? (Y/N): ")
+
             
-            conLogistics.commit()
-        else:
-            print("No Package was Deleted.")
+            if strChoice == "y" or strChoice == "Y":
+                #Prepared statement
+                #Question marks align with the values being inserted
+                strQuery = f"DELETE FROM Packages WHERE TrackingNumber = ?"
+                            
+                tupValues = (strTrackingNumber,)
+                objCursor = conLogistics.cursor()
+                #Using the tupValues
+                objCursor.execute(strQuery,tupValues)
+                                        
+                conLogistics.commit()
+            else:
+                print("No Package was Deleted.")
+
+        elif blnDoesTrackingNumberExist == False:
+            print("There was no package with that tracking number. Please try again.")
     conLogistics.close()
 
 #Record
@@ -176,3 +208,9 @@ def mainMenu():
 
 #Calls the main menu
 mainMenu()
+
+strTrackingNumber = "Test"
+print(f"'{strTrackingNumber}'")
+
+('SHI-10025',)
+('SHI-10025',)
