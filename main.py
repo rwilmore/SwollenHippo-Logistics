@@ -65,7 +65,7 @@ def deleteCustomer(strCustomerID):
         conLogistics.commit()
     conLogistics.close()
 
-def main():
+def mainMenu():
 
     print("-----Welcome to Swollen Hippo Logistics-----")
     print("Choose from the options below:")
@@ -82,25 +82,26 @@ def main():
     #Create
     if strChoice == "1":
         print("test")
-        main()
+        mainMenu()
     #View
     elif strChoice == "2":
         print("test")
-        main()
+        mainMenu()
     #Update
     elif strChoice == "3":
         print("test")
-        main()
+        mainMenu()
     #Delete
     elif strChoice == "4":
         print("test")
-        main()
+        mainMenu()
     #Record
     elif strChoice == "5":
         print("test")
-        main()
+        mainMenu()
     #Exit
     elif strChoice == "6":
         print("Exiting the application. Have a nice day!")
 
-main()
+#Calls the main menu
+mainMenu()
