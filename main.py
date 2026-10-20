@@ -102,13 +102,15 @@ def updateShippingInformation(strCustomerID,strCompanyName,strContactFirstName,s
     conLogistics.close()
 
 #Delete
-def deleteExisitingPackage(strCustomerID):
+def deleteExisitingPackage():
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         #Prepared statement
         #Question marks align with the values being inserted
-        strQuery = f"DELETE FROM customers WHERE CustomerID = ?"
-        #'{strCustomerID}','{strCompanyName}','{strContactFirstName}','{strContactLastName}','{strEmail}','{strPhone}','{strCity}','{strState}','{strCustomerType}'
-        tupValues = (strCustomerID,)
+        strQuery = f"DELETE FROM Packages WHERE TrackingNumber = ?"
+
+        strTrackingNumber = input("What is the Tracking Number of the Package you wish to Delete? : ")
+
+        tupValues = (strTrackingNumber,)
         objCursor = conLogistics.cursor()
         #Using the tupValues
         objCursor.execute(strQuery,tupValues)
