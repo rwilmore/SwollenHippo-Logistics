@@ -73,31 +73,56 @@ def addPackageShipment():
 
 #Read
 def getShippingInformation():
-    
-    strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = ?"
-
-    strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information.")
-    tupValues = (strTrackingNumber,)
-
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
-        objCursor = conLogistics.cursor()
-        objCursor.execute(strQuery,tupValues)
-        lstRows = objCursor.fetchall()
 
+        #Gets tracking number from user
+        strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information.")
+        tupValues = (strTrackingNumber,)
+
+        #Open database and converts the row of TrackingNumber into a list
+        strQuery = "SELECT TrackingNumber FROM Packages"
+        objCursor = conLogistics.cursor()
+        objCursor.execute(strQuery)
+        lstTrackingNumbers = objCursor.fetchall()
+
+        #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
+        #will the program switch it to true
+        blnDoesTrackingNumberExist = False
+
+        #Iterates through the list to find the correct number if available
+        for objTrackingNumber in lstTrackingNumbers:
         
+            #Note: I used AI to understand an issue and fix this line of code vvv
+            #Figured out that an entire tuple could not be compared to a string
+            #So it was always returning false
+            if objTrackingNumber[0] == strTrackingNumber:
         
-        print("\n-----PACKAGE SHIPPING INFORMATION-----")
-        print(f"Tracking Number: {lstRows[0][0]}")
-        print(f"First Name: {lstRows[0][1]}")
-        print(f"Last Name: {lstRows[0][2]}")
-        print(f"Destination Company: {lstRows[0][3]}")
-        print(f"Destination Street Address: {lstRows[0][4]}")
-        print(f"Destination City: {lstRows[0][5]}")
-        print(f"Destination State: {lstRows[0][6]}")
-        print(f"Destination ZIP Code: {lstRows[0][7]}")
-        print(f"Originating Customer: {lstRows[0][8]}")
-        print(f"Originating Facility: {lstRows[0][9]}")
-        print("--------------------------------------\n")
+                #If there blnDoesTrackingNumberExist returns true
+                blnDoesTrackingNumberExist = True
+
+         #Using the value of blnDoesTrackingNumberExist 
+        if blnDoesTrackingNumberExist == True:
+
+            strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = ?"
+            objCursor = conLogistics.cursor()
+            objCursor.execute(strQuery,tupValues)
+            lstRows = objCursor.fetchall()
+            
+            print("\n-----PACKAGE SHIPPING INFORMATION-----")
+            print(f"Tracking Number: {lstRows[0][0]}")
+            print(f"First Name: {lstRows[0][1]}")
+            print(f"Last Name: {lstRows[0][2]}")
+            print(f"Destination Company: {lstRows[0][3]}")
+            print(f"Destination Street Address: {lstRows[0][4]}")
+            print(f"Destination City: {lstRows[0][5]}")
+            print(f"Destination State: {lstRows[0][6]}")
+            print(f"Destination ZIP Code: {lstRows[0][7]}")
+            print(f"Originating Customer: {lstRows[0][8]}")
+            print(f"Originating Facility: {lstRows[0][9]}")
+            print("--------------------------------------\n")
+
+        else:
+            print("\nThere was no package with that tracking number. Please try again.\n")
 
     conLogistics.close()
 
@@ -137,7 +162,7 @@ def deleteExisitingPackage():
         for objTrackingNumber in lstTrackingNumbers:
 
             #Note: I used AI to understand an issue and fix this line of code vvv
-            #Figured out that a tuple could not be compared to a string
+            #Figured out that an entire tuple could not be compared to a string
             #So it was always returning false
             if objTrackingNumber[0] == strTrackingNumber:
 
