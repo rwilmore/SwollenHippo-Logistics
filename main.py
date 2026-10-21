@@ -72,17 +72,32 @@ def addPackageShipment():
     print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
 
 #Read
-def getShippingInformation(strCustomerID):
-    strQuerry = ""
-    if strCustomerID == "A":
-        strQuery = "SELECT * FROM customers"
-    else:
-        strQuery = f"SELECT * FROM customers WHERE CustomerID = '{strCustomerID}'"
+def getShippingInformation():
+    
+    strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = ?"
+
+    strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information.")
+    tupValues = (strTrackingNumber,)
+
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         objCursor = conLogistics.cursor()
-        objCursor.execute(strQuery)
+        objCursor.execute(strQuery,tupValues)
         lstRows = objCursor.fetchall()
-        print(lstRows)
+
+        
+        
+        print("\n-----PACKAGE SHIPPING INFORMATION-----")
+        print(f"Tracking Number: {lstRows[0][0]}")
+        print(f"First Name: {lstRows[0][1]}")
+        print(f"Last Name: {lstRows[0][2]}")
+        print(f"Destination Company: {lstRows[0][3]}")
+        print(f"Destination Street Address: {lstRows[0][4]}")
+        print(f"Destination City: {lstRows[0][5]}")
+        print(f"Destination State: {lstRows[0][6]}")
+        print(f"Destination ZIP Code: {lstRows[0][7]}")
+        print(f"Originating Customer: {lstRows[0][8]}")
+        print(f"Originating Facility: {lstRows[0][9]}")
+        print("--------------------------------------\n")
 
     conLogistics.close()
 
@@ -168,14 +183,14 @@ def recordArrivalOfPackage():
 
 def mainMenu():
 
-    print("-----Welcome to Swollen Hippo Logistics-----")
-    print("Choose from the options below:")
+    print("----------------------------------------Swollen-Hippo-Logistics----------------------------------------")
     print("1. Create a new package shipment.")
     print("2. View the shipping information for an existing package (Including the tracking history of a package).")
     print("3. Update the shipping information for an existing package.")
     print("4. Delete an existing package.")
     print("5. Record the arrival of a package at a regional shipping facility.")
     print("6. Exit the application.")
+    print("-------------------------------------------------------------------------------------------------------")
 
     strChoice = input("\n")
 
@@ -209,8 +224,3 @@ def mainMenu():
 #Calls the main menu
 mainMenu()
 
-strTrackingNumber = "Test"
-print(f"'{strTrackingNumber}'")
-
-('SHI-10025',)
-('SHI-10025',)
