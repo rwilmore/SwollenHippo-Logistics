@@ -1,10 +1,13 @@
-#Purpose:
+#Purpose: This is a Python and SQLite tracking and managament system for SwollenHippo Logistics
 #Author: Ryan Wilmore
 #Date: 13 October 2026
 
 import sqlite3
 
 from datetime import datetime, timezone
+
+#Converts format to XXXX-XX-XXTXX:XX:XX.XXXZ
+strCurrentTime = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:00.000')+ "Z"
 
 #Start of Global Functions
 #Create 
@@ -62,13 +65,20 @@ def addPackageShipment():
         strOriginatingFacility = input("Enter the Originating Facility: ")
         if strOriginatingFacility == "":
             print("Error. Originating Facility cannot be blank! Please try again.")
-            strOriginatingFacility = input("Enter the Destination Last Name: ")
+            strOriginatingFacility = input("Enter the Originating Facility: ")
 
         tupValues = (strTrackingNumber,strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility)
         objCursor = conLogistics.cursor()
         #Using the tupValues
         objCursor.execute(strQuery,tupValues)
 
+        #Creates first tracking record
+        strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
+
+        tupValues = (strTrackingNumber,strOriginatingFacility,strCurrentTime)
+        objCursor = conLogistics.cursor()
+        #Using the tupValues
+        objCursor.execute(strQuery,tupValues)
         conLogistics.commit()
     conLogistics.close()
     print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
@@ -305,9 +315,6 @@ def recordArrivalOfPackage():
     if strFacilityID != "TN01" and strFacilityID != "NJ02" and strFacilityID != "KS01" and strFacilityID != "CA04" and strFacilityID != "ID01":
         print("Invalid FacilityID. Please try again.")
         strFacilityID = input("Enter the Facility ID of the Facility that the package has arrived to: ")
-    
-    #Converts format to XXXX-XX-XXTXX:XX:XX.XXXZ
-    strCurrentTime = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:00.000')+ "Z"
 
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
         #Prepared statement
@@ -322,7 +329,7 @@ def recordArrivalOfPackage():
         conLogistics.commit()
     conLogistics.close()
 
-
+#Main Menu
 def mainMenu():
 
     print("\n----------------------------------------Swollen-Hippo-Logistics----------------------------------------")
@@ -363,7 +370,6 @@ def mainMenu():
     else:
         print("Invalid Menu Selection. Please Try Again.")
         mainMenu()
-
 #End of Global Functions
 
 #Calls the main menu
