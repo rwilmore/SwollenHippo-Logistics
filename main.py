@@ -127,13 +127,63 @@ def getShippingInformation():
     conLogistics.close()
 
 #Update
-def updateShippingInformation(strCustomerID,strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType):
+def updateShippingInformation():
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
+
+        strTrackingNumber = input("Enter the Tracking Number: ")
+        if strTrackingNumber == "":
+            print("Error. Tracking Number cannot be blank! Please try again.")
+            strTrackingNumber = input("Enter the Tracking Number: ")
+
+        strDestinationFirstName = input("Enter the Destination First Name: ")
+        if strDestinationFirstName == "":
+            print("Error. Destination First Name cannot be blank! Please try again.")
+            strDestinationFirstName = input("Enter the Destination First Name: ")
+
+        strDestinationLastName = input("Enter the Destination Last Name: ")
+        if strDestinationLastName == "":
+            print("Error. Destination Last Name cannot be blank! Please try again.")
+            strDestinationLastName = input("Enter the Destination Last Name: ")
+
+        strDestinationCompany = input("Enter the Destination Company: ")
+        if strDestinationCompany == "":
+            print("Error. Destination Company cannot be blank! Please try again.")
+            strDestinationCompany = input("Enter the Destination Company: ")
+
+        strDestinationStreet = input("Enter the Destination Street: ")
+        if strDestinationStreet == "":
+            print("Error. Destination Street cannot be blank! Please try again.")
+            strDestinationStreet = input("Enter the Destination Street: ")
+
+        strDestinationCity = input("Enter the Destination City: ")
+        if strDestinationCity == "":
+            print("Error. Destination City cannot be blank! Please try again.")
+            strDestinationCity = input("Enter the Destination City: ")
+
+        strDestinationState = input("Enter the Destination State: ")
+        if strDestinationState == "":
+            print("Error. Destination State cannot be blank! Please try again.")
+            strDestinationState = input("Enter the Destination State: ")
+
+        strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+        if strDestinationZipCode == "":
+            print("Error. Destination ZIP Code cannot be blank! Please try again.")
+            strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+
+        strOriginatingCustomer = input("Enter the Originating Customer: ")
+        if strOriginatingCustomer == "":
+            print("Error. Originating Customer cannot be blank! Please try again.")
+            strOriginatingCustomer = input("Enter the Originating Customer: ")
+
+        strOriginatingFacility = input("Enter the Originating Facility: ")
+        if strOriginatingFacility == "":
+            print("Error. Originating Facility cannot be blank! Please try again.")
+            strOriginatingFacility = input("Enter the Destination Last Name: ")
+
         #Prepared statement
         #Question marks align with the values being inserted
-        strQuery = f"UPDATE customers SET CompanyName = ?, ContactFirstName = ?, ContactLastName = ?, Email = ?, Phone = ?, City = ?, State = ?, CustomerType = ? WHERE CustomerID = ?"
-        #'{strCustomerID}','{strCompanyName}','{strContactFirstName}','{strContactLastName}','{strEmail}','{strPhone}','{strCity}','{strState}','{strCustomerType}'
-        tupValues = (strCompanyName,strContactFirstName,strContactLastName,strEmail,strPhone,strCity,strState,strCustomerType,strCustomerID)
+        strQuery = f"UPDATE Packages SET DestinationFirstName = ?, DestinationLastName = ?, DestinationCompany = ?, DestinationStreetAddress = ?, DestinationCity = ?, DestinationState = ?, DestinationZIPCode = ?, OriginatingCustomer = ?, OriginatingFacilityID = ? WHERE TrackingNumber = ?"
+        tupValues = (strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility,strTrackingNumber)
         objCursor = conLogistics.cursor()
         #Using the tupValues
         objCursor.execute(strQuery,tupValues)
