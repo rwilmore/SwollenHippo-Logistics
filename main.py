@@ -78,7 +78,7 @@ def getShippingInformation():
     with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
         #Gets tracking number from user
-        strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information.")
+        strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information: ")
         tupValues = (strTrackingNumber,)
 
         #Open database and converts the row of TrackingNumber into a list
@@ -94,9 +94,7 @@ def getShippingInformation():
         #Iterates through the list to find the correct number if available
         for objTrackingNumber in lstTrackingNumbers:
         
-            #Note: I used AI to understand an issue and fix this line of code vvv
-            #Figured out that an entire tuple could not be compared to a string
-            #So it was always returning false
+            
             if objTrackingNumber[0] == strTrackingNumber:
         
                 #If there blnDoesTrackingNumberExist returns true
@@ -121,6 +119,42 @@ def getShippingInformation():
             print(f"Destination ZIP Code: {lstRows[0][7]}")
             print(f"Originating Customer: {lstRows[0][8]}")
             print(f"Originating Facility: {lstRows[0][9]}")
+            print("--------------------------------------\n")
+
+            #Tracking History
+            strQuery = f"SELECT * FROM TrackingHistory WHERE TrackingNumber = ?"
+            objCursor = conLogistics.cursor()
+            objCursor.execute(strQuery,tupValues)
+            lstRows = objCursor.fetchall()
+            
+            print("\n-----------Tracking-History-----------")
+
+            #Tracking History for loop
+            for row in lstRows:
+                if row[2] == "TN01":
+                    print("Facility: Cookeville, TN")
+                elif row[2] == "NJ02":
+                    print("Facility: Jersey City, NJ")
+                elif row[2] == "KS01":
+                    print("Facility: Kansas City, KS")                    
+                elif row[2] == "CA04":
+                    print("Facility: Los Angeles, CA")
+                elif row[2] == "ID01":
+                    print("Facility: Sioux City, ID")
+                
+                print(f"Time of Arrival: {row[3]}\n")
+
+            #Current Location
+            if lstRows[len(lstRows)-1][2] == "TN01":
+                print("Current Location: Cookeville, TN")
+            elif lstRows[len(lstRows)-1][2] == "KJ02":
+                print("Current Location: Jersey City, NJ")
+            elif lstRows[len(lstRows)-1][2] == "KS01":
+                print("Current Location: Kansas City, KS")
+            elif lstRows[len(lstRows)-1][2] == "CA04":
+                print("Current Location: Los Angeles, CA")
+            elif lstRows[len(lstRows)-1][2] == "ID01":
+                print("Current Location: Sioux City, ID")
             print("--------------------------------------\n")
 
         else:
@@ -213,9 +247,6 @@ def deleteExisitingPackage():
         #Iterates through the list to find the correct number if available
         for objTrackingNumber in lstTrackingNumbers:
 
-            #Note: I used AI to understand an issue and fix this line of code vvv
-            #Figured out that an entire tuple could not be compared to a string
-            #So it was always returning false
             if objTrackingNumber[0] == strTrackingNumber:
 
                 #If there blnDoesTrackingNumberExist returns true
@@ -256,7 +287,6 @@ def deleteExisitingPackage():
 
 #Record
 def recordArrivalOfPackage():
-    #INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)
 
     strTrackingNumber = input("Enter the Tracking Number of the Package you wish to Record the Arrival of: ")
     if strTrackingNumber == "":
