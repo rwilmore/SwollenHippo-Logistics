@@ -4,6 +4,8 @@
 
 import sqlite3
 
+from datetime import datetime, timezone
+
 #Start of Global Functions
 #Create 
 def addPackageShipment():
@@ -254,11 +256,46 @@ def deleteExisitingPackage():
 
 #Record
 def recordArrivalOfPackage():
-    print("This is a placeholder")
+    #INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)
+
+    strTrackingNumber = input("Enter the Tracking Number of the Package you wish to Record the Arrival of: ")
+    if strTrackingNumber == "":
+        print("Tacking Number cannot be blank! Please try again.")
+        strTrackingNumber = input("Enter the Tracking Number of the Package you wish to Record the Arrival of: ")
+
+    print("\n-----Facility-IDs-----")
+    print("TN01 - Cookeville, TN")
+    print("NJ02 - Jersey City, NJ")
+    print("KS01 - Kansas City, KS")
+    print("CA04 - Los Angeles, CA")
+    print("ID01 Sioux City, ID")
+    print("----------------------\n")
+
+    strFacilityID = input("Enter the Facility ID of the Facility that the package has arrived to: ")
+    if strFacilityID != "TN01" and strFacilityID != "NJ02" and strFacilityID != "KS01" and strFacilityID != "CA04" and strFacilityID != "ID01":
+        print("Invalid FacilityID. Please try again.")
+        strFacilityID = input("Enter the Facility ID of the Facility that the package has arrived to: ")
+    
+    #Converts format to XXXX-XX-XXTXX:XX:XX.XXXZ
+    strCurrentTime = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:00.000')+ "Z"
+
+    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
+        #Prepared statement
+        #Question marks align with the values being inserted
+        strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
+
+        tupValues = (strTrackingNumber,strFacilityID,strCurrentTime)
+        objCursor = conLogistics.cursor()
+        #Using the tupValues
+        objCursor.execute(strQuery,tupValues)
+
+        conLogistics.commit()
+    conLogistics.close()
+
 
 def mainMenu():
 
-    print("----------------------------------------Swollen-Hippo-Logistics----------------------------------------")
+    print("\n----------------------------------------Swollen-Hippo-Logistics----------------------------------------")
     print("1. Create a new package shipment.")
     print("2. View the shipping information for an existing package (Including the tracking history of a package).")
     print("3. Update the shipping information for an existing package.")
@@ -288,14 +325,16 @@ def mainMenu():
         mainMenu()
     #Record
     elif strChoice == "5":
-        print("test")
+        recordArrivalOfPackage()
         mainMenu()
     #Exit
     elif strChoice == "6":
         print("Exiting the application. Have a nice day!")
+    else:
+        print("Invalid Menu Selection. Please Try Again.")
+        mainMenu()
 
 #End of Global Functions
 
 #Calls the main menu
 mainMenu()
-
