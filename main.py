@@ -12,94 +12,108 @@ strCurrentTime = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:00.000')+ "
 #Start of Global Functions
 #Create 
 def addPackageShipment():
-    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
-        #Prepared statement
-        #Question marks align with the values being inserted
-        strQuery = f"INSERT INTO Packages VALUES (?,?,?,?,?,?,?,?,?,?)"
 
-        strTrackingNumber = input("Enter the Tracking Number: ")
-        if strTrackingNumber == "":
-            print("Error. Tracking Number cannot be blank! Please try again.")
-            strTrackingNumber = input("Enter the Tracking Number: ")
+    #Default values for these variables, if there are no errors, these will not be used
+    blnError = False
+    strError = ""
 
-        strDestinationFirstName = input("Enter the Destination First Name: ")
-        if strDestinationFirstName == "":
-            print("Error. Destination First Name cannot be blank! Please try again.")
-            strDestinationFirstName = input("Enter the Destination First Name: ")
+    strTrackingNumber = input("Enter the Tracking Number: ")
+    if strTrackingNumber == "":
+        strError += "Tracking Number cannot be blank. "
+        blnError = True
 
-        strDestinationLastName = input("Enter the Destination Last Name: ")
-        if strDestinationLastName == "":
-            print("Error. Destination Last Name cannot be blank! Please try again.")
-            strDestinationLastName = input("Enter the Destination Last Name: ")
+    strDestinationFirstName = input("Enter the Destination First Name: ")
+    if strDestinationFirstName == "":
+        strError += "Destination First Name cannot be blank. "
+        blnError = True
 
-        strDestinationCompany = input("Enter the Destination Company: ")
-        if strDestinationCompany == "":
-            print("Error. Destination Company cannot be blank! Please try again.")
-            strDestinationCompany = input("Enter the Destination Company: ")
+    strDestinationLastName = input("Enter the Destination Last Name: ")
+    if strDestinationLastName == "":
+        strError += "Destination Last Name cannot be blank. "
+        blnError = True
 
-        strDestinationStreet = input("Enter the Destination Street: ")
-        if strDestinationStreet == "":
-            print("Error. Destination Street cannot be blank! Please try again.")
-            strDestinationStreet = input("Enter the Destination Street: ")
+    strDestinationCompany = input("Enter the Destination Company: ")
+    if strDestinationCompany == "":
+        strError += "Destination Company cannot be blank. "
+        blnError = True
 
-        strDestinationCity = input("Enter the Destination City: ")
-        if strDestinationCity == "":
-            print("Error. Destination City cannot be blank! Please try again.")
-            strDestinationCity = input("Enter the Destination City: ")
+    strDestinationStreet = input("Enter the Destination Street: ")
+    if strDestinationStreet == "":
+        strError += "Destination Street cannot be blank. "
+        blnError = True
 
-        strDestinationState = input("Enter the Destination State: ")
-        if strDestinationState == "":
-            print("Error. Destination State cannot be blank! Please try again.")
-            strDestinationState = input("Enter the Destination State: ")
+    strDestinationCity = input("Enter the Destination City: ")
+    if strDestinationCity == "":
+        strError += "Destination City cannot be blank. "
+        blnError = True
 
-        strDestinationZipCode = input("Enter the Destination ZIP Code: ")
-        if strDestinationZipCode == "":
-            print("Error. Destination ZIP Code cannot be blank! Please try again.")
-            strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+    strDestinationState = input("Enter the Destination State: ")
+    if strDestinationState == "":
+        strError += "Destination State cannot be blank. "
+        blnError = True
 
-        strOriginatingCustomer = input("Enter the Originating Customer: ")
-        if strOriginatingCustomer == "":
-            print("Error. Originating Customer cannot be blank! Please try again.")
-            strOriginatingCustomer = input("Enter the Originating Customer: ")
+    strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+    if strDestinationZipCode == "":
+        strError += "Destination ZIP Code cannot be blank. "
+        blnError = True
 
-        strOriginatingFacility = input("Enter the Originating Facility: ")
-        if strOriginatingFacility == "":
-            print("Error. Originating Facility cannot be blank! Please try again.")
-            strOriginatingFacility = input("Enter the Originating Facility: ")
+    strOriginatingCustomer = input("Enter the Originating Customer: ")
+    if strOriginatingCustomer == "":
+        strError += "Originating Customer cannot be blank. "
+        blnError = True
 
-        tupValues = (strTrackingNumber,strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility)
-        objCursor = conLogistics.cursor()
-        #Using the tupValues
-        objCursor.execute(strQuery,tupValues)
+    strOriginatingFacility = input("Enter the Originating Facility: ")
+    if strOriginatingFacility == "":
+        strError += "Originating Facility cannot be blank. "
+        blnError = True
 
-        #Creates first tracking record
-        strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
+    if blnError == False:
+        with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
+        
+            #Prepared statement
+            #Question marks align with the values being inserted
+            strQuery = f"INSERT INTO Packages VALUES (?,?,?,?,?,?,?,?,?,?)"
 
-        tupValues = (strTrackingNumber,strOriginatingFacility,strCurrentTime)
-        objCursor = conLogistics.cursor()
-        #Using the tupValues
-        objCursor.execute(strQuery,tupValues)
-        conLogistics.commit()
-    conLogistics.close()
-    print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
+            #Adds inputs into a tuple
+            tupValues = (strTrackingNumber,strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility)
+            objCursor = conLogistics.cursor()
+
+            #Using the tupValues
+            objCursor.execute(strQuery,tupValues)
+    
+            #Creates first tracking record
+            strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
+    
+            tupValues = (strTrackingNumber,strOriginatingFacility,strCurrentTime)
+            objCursor = conLogistics.cursor()
+            #Using the tupValues
+            objCursor.execute(strQuery,tupValues)
+            conLogistics.commit()
+        conLogistics.close()
+        print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
+    else:
+        #Error Statement
+        print(f"Error: {strError}Please try again.")
+        strContinue = input("Press enter to continue.")
 
 #Read
 def getShippingInformation():
-    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
-        #Gets tracking number from user
-        strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information: ")
-        tupValues = (strTrackingNumber,)
+    #Gets tracking number from user
+    strTrackingNumber = input("Please enter the Tracking Number of the Package you wish to view its information: ")
+
+    #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
+    #will the program switch it to true
+    blnDoesTrackingNumberExist = False
+
+
+    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
         #Open database and converts the row of TrackingNumber into a list
         strQuery = "SELECT TrackingNumber FROM Packages"
         objCursor = conLogistics.cursor()
         objCursor.execute(strQuery)
         lstTrackingNumbers = objCursor.fetchall()
-
-        #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
-        #will the program switch it to true
-        blnDoesTrackingNumberExist = False
 
         #Iterates through the list to find the correct number if available
         for objTrackingNumber in lstTrackingNumbers:
@@ -113,6 +127,8 @@ def getShippingInformation():
          #Using the value of blnDoesTrackingNumberExist 
         if blnDoesTrackingNumberExist == True:
 
+            tupValues = (strTrackingNumber,)
+            
             strQuery = f"SELECT * FROM Packages WHERE TrackingNumber = ?"
             objCursor = conLogistics.cursor()
             objCursor.execute(strQuery,tupValues)
@@ -169,90 +185,104 @@ def getShippingInformation():
 
         else:
             print("\nThere was no package with that tracking number. Please try again.\n")
-
+            strContinue = input("Press enter continue.")
     conLogistics.close()
 
 #Update
 def updateShippingInformation():
-    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
-        strTrackingNumber = input("Enter the Tracking Number: ")
-        if strTrackingNumber == "":
-            print("Error. Tracking Number cannot be blank! Please try again.")
-            strTrackingNumber = input("Enter the Tracking Number: ")
+    #Default values for these variables, if there are no errors, these will not be used
+    blnError = False
+    strError = ""
 
-        strDestinationFirstName = input("Enter the Destination First Name: ")
-        if strDestinationFirstName == "":
-            print("Error. Destination First Name cannot be blank! Please try again.")
-            strDestinationFirstName = input("Enter the Destination First Name: ")
+    strTrackingNumber = input("Enter the Tracking Number: ")
+    if strTrackingNumber == "":
+        strError += "Tracking Number cannot be blank. "
+        blnError = True
 
-        strDestinationLastName = input("Enter the Destination Last Name: ")
-        if strDestinationLastName == "":
-            print("Error. Destination Last Name cannot be blank! Please try again.")
-            strDestinationLastName = input("Enter the Destination Last Name: ")
+    strDestinationFirstName = input("Enter the Destination First Name: ")
+    if strDestinationFirstName == "":
+        strError += "Destination First Name cannot be blank. "
+        blnError = True
 
-        strDestinationCompany = input("Enter the Destination Company: ")
-        if strDestinationCompany == "":
-            print("Error. Destination Company cannot be blank! Please try again.")
-            strDestinationCompany = input("Enter the Destination Company: ")
+    strDestinationLastName = input("Enter the Destination Last Name: ")
+    if strDestinationLastName == "":
+        strError += "Destination Last Name cannot be blank. "
+        blnError = True
 
-        strDestinationStreet = input("Enter the Destination Street: ")
-        if strDestinationStreet == "":
-            print("Error. Destination Street cannot be blank! Please try again.")
-            strDestinationStreet = input("Enter the Destination Street: ")
+    strDestinationCompany = input("Enter the Destination Company: ")
+    if strDestinationCompany == "":
+        strError += "Destination Company cannot be blank. "
+        blnError = True
 
-        strDestinationCity = input("Enter the Destination City: ")
-        if strDestinationCity == "":
-            print("Error. Destination City cannot be blank! Please try again.")
-            strDestinationCity = input("Enter the Destination City: ")
+    strDestinationStreet = input("Enter the Destination Street: ")
+    if strDestinationStreet == "":
+        strError += "Destination Street cannot be blank. "
+        blnError = True
 
-        strDestinationState = input("Enter the Destination State: ")
-        if strDestinationState == "":
-            print("Error. Destination State cannot be blank! Please try again.")
-            strDestinationState = input("Enter the Destination State: ")
+    strDestinationCity = input("Enter the Destination City: ")
+    if strDestinationCity == "":
+        strError += "Destination City cannot be blank. "
+        blnError = True
 
-        strDestinationZipCode = input("Enter the Destination ZIP Code: ")
-        if strDestinationZipCode == "":
-            print("Error. Destination ZIP Code cannot be blank! Please try again.")
-            strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+    strDestinationState = input("Enter the Destination State: ")
+    if strDestinationState == "":
+        strError += "Destination State cannot be blank. "
+        blnError = True
 
-        strOriginatingCustomer = input("Enter the Originating Customer: ")
-        if strOriginatingCustomer == "":
-            print("Error. Originating Customer cannot be blank! Please try again.")
-            strOriginatingCustomer = input("Enter the Originating Customer: ")
+    strDestinationZipCode = input("Enter the Destination ZIP Code: ")
+    if strDestinationZipCode == "":
+        strError += "Destination ZIP Code cannot be blank. "
+        blnError = True
 
-        strOriginatingFacility = input("Enter the Originating Facility: ")
-        if strOriginatingFacility == "":
-            print("Error. Originating Facility cannot be blank! Please try again.")
-            strOriginatingFacility = input("Enter the Destination Last Name: ")
+    strOriginatingCustomer = input("Enter the Originating Customer: ")
+    if strOriginatingCustomer == "":
+        strError += "Originating Customer cannot be blank. "
+        blnError = True
 
-        #Prepared statement
-        #Question marks align with the values being inserted
-        strQuery = f"UPDATE Packages SET DestinationFirstName = ?, DestinationLastName = ?, DestinationCompany = ?, DestinationStreetAddress = ?, DestinationCity = ?, DestinationState = ?, DestinationZIPCode = ?, OriginatingCustomer = ?, OriginatingFacilityID = ? WHERE TrackingNumber = ?"
-        tupValues = (strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility,strTrackingNumber)
-        objCursor = conLogistics.cursor()
-        #Using the tupValues
-        objCursor.execute(strQuery,tupValues)
+    strOriginatingFacility = input("Enter the Originating Facility: ")
+    if strOriginatingFacility == "":
+        strError += "Originating Facility cannot be blank. "
+        blnError = True
 
-        conLogistics.commit()
-    conLogistics.close()
+    #Checks for errors
+    if blnError == False:
+        with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
+        
+            #Prepared statement
+            #Question marks align with the values being inserted
+            strQuery = f"UPDATE Packages SET DestinationFirstName = ?, DestinationLastName = ?, DestinationCompany = ?, DestinationStreetAddress = ?, DestinationCity = ?, DestinationState = ?, DestinationZIPCode = ?, OriginatingCustomer = ?, OriginatingFacilityID = ? WHERE TrackingNumber = ?"
+            tupValues = (strDestinationFirstName,strDestinationLastName,strDestinationCompany,strDestinationStreet,strDestinationCity,strDestinationState,strDestinationZipCode,strOriginatingCustomer,strOriginatingFacility,strTrackingNumber)
+            objCursor = conLogistics.cursor()
+            #Using the tupValues
+            objCursor.execute(strQuery,tupValues)
+
+            conLogistics.commit()
+        conLogistics.close()
+        print(f"\nYour package has been recorded. Tracking number: {strTrackingNumber}\n")
+        strContinue = input("Press enter to continue.")
+    else:
+        #Error Statement
+        print(f"Error: {strError}Please try again.")
+        strContinue = input("Press enter to continue.")
 
 #Delete
 def deleteExisitingPackage():
-    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
-        #Gets tracking number from user
-        strTrackingNumber = input("What is the Tracking Number of the Package you wish to Delete? : ")
+    #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
+    #will the program switch it to true
+    blnDoesTrackingNumberExist = False
+
+    #Gets tracking number from user
+    strTrackingNumber = input("What is the Tracking Number of the Package you wish to Delete? : ")
+
+    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
 
         #Open database and converts the row of TrackingNumber into a list
         strQuery = "SELECT TrackingNumber FROM Packages"
         objCursor = conLogistics.cursor()
         objCursor.execute(strQuery)
         lstTrackingNumbers = objCursor.fetchall()
-
-        #Default state for blnDoesTrackingNumberExist = False so that only if it does exist
-        #will the program switch it to true
-        blnDoesTrackingNumberExist = False
 
         #Iterates through the list to find the correct number if available
         for objTrackingNumber in lstTrackingNumbers:
@@ -288,11 +318,15 @@ def deleteExisitingPackage():
                 objCursor.execute(strQuery,tupValues)
                                         
                 conLogistics.commit()
+                print(f"Package {strTrackingNumber} was deleted.")
+                strContinue = input("Press enter to continue.")
             else:
                 print("No Package was Deleted.")
+                strContinue = input("Press enter to continue.")
 
-        elif blnDoesTrackingNumberExist == False:
+        else:
             print("There was no package with that tracking number. Please try again.")
+            strContinue = input("Press enter to continue.")
     conLogistics.close()
 
 #Record
@@ -314,20 +348,22 @@ def recordArrivalOfPackage():
     strFacilityID = input("Enter the Facility ID of the Facility that the package has arrived to: ")
     if strFacilityID != "TN01" and strFacilityID != "NJ02" and strFacilityID != "KS01" and strFacilityID != "CA04" and strFacilityID != "ID01":
         print("Invalid FacilityID. Please try again.")
-        strFacilityID = input("Enter the Facility ID of the Facility that the package has arrived to: ")
+        strContinue = input("Press enter continue.")
+    else:
+        with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
+            #Prepared statement
+            #Question marks align with the values being inserted
+            strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
 
-    with sqlite3.connect("SwollenHippoLogistics_Sample.db") as conLogistics:
-        #Prepared statement
-        #Question marks align with the values being inserted
-        strQuery = f"INSERT INTO TrackingHistory VALUES ((SELECT MAX(TrackingID) + 1 FROM TrackingHistory),?,?,?)"
+            tupValues = (strTrackingNumber,strFacilityID,strCurrentTime)
+            objCursor = conLogistics.cursor()
+            #Using the tupValues
+            objCursor.execute(strQuery,tupValues)
 
-        tupValues = (strTrackingNumber,strFacilityID,strCurrentTime)
-        objCursor = conLogistics.cursor()
-        #Using the tupValues
-        objCursor.execute(strQuery,tupValues)
-
-        conLogistics.commit()
-    conLogistics.close()
+            conLogistics.commit()
+            print(f"Package {strTrackingNumber}'s arrival time and location have been recorded.")
+            strContinue = input("Press enter to continue.")
+        conLogistics.close()
 
 #Main Menu
 def mainMenu():
@@ -341,7 +377,7 @@ def mainMenu():
     print("6. Exit the application.")
     print("-------------------------------------------------------------------------------------------------------")
 
-    strChoice = input("\n")
+    strChoice = input("Which menu option would you like to do (1-6): ")
 
     #Main menu
     #Create
